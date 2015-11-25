@@ -23,7 +23,7 @@ class DefaultController extends Controller
      */
     public function switchClubAction()
     {
-        $formType = $this->get('gyman.multidatabase.form.club_switch');
+        $formType = $this->get('dende.multidatabase.form.club_switch');
 
         return [
             'form' => $this->createForm($formType)->createView(),
@@ -31,12 +31,12 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/set-current-club", name="gyman_multidatabase_set_current_club")
+     * @Route("/set-current-club", name="dende_multidatabase_set_current_club")
      * @Method("POST")
      */
     public function setCurrentClubAction(Request $request)
     {
-        $form = $this->createForm($this->get('gyman.multidatabase.form.club_switch'));
+        $form = $this->createForm($this->get('dende.multidatabase.form.club_switch'));
 
         $form->handleRequest($request);
 
