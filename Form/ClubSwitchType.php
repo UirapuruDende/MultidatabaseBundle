@@ -1,6 +1,7 @@
 <?php
 namespace Dende\MultidatabaseBundle\Form;
 
+use Dende\MultidatabaseBundle\Entity\Tenant;
 use Gyman\Bundle\UserBundle\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -26,11 +27,10 @@ class ClubSwitchType extends AbstractType
     {
         $clubs = $this->user->getClubs();
 
-        $builder->add('club', 'entity', [
-            'class'    => 'ClubBundle:Club',
+        $builder->add('tenant', 'entity', [
+            'class'    => Tenant::class,
             'choices'  => $clubs,
             'property' => 'name',
-            'data'     => $this->user->getCurrentClub(),
         ]);
     }
 

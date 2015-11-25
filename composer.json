@@ -3,11 +3,11 @@
     "require": {
         "symfony/symfony": "^2.7",
         "doctrine/doctrine-bundle": "^1.5",
-        "doctrine/orm": "dev-master",
-        "doctrine/doctrine-fixtures-bundle": "dev-master",
+        "doctrine/orm": "2.*",
+        "doctrine/doctrine-fixtures-bundle": "*",
         "symfony/http-kernel" : "2.7.5",
         "sensio/framework-extra-bundle": "~3.0",
-        "dende/common-bundle": "dev-master",
+        "dende/common-bundle": "*",
         "liip/functional-test-bundle": "^1.2"
     },
     "require-dev": {

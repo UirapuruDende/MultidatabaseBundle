@@ -42,44 +42,42 @@ final class ClubConnectionCommandListener
         }
 
         $command->getApplication()->getDefinition()->addOption(
-            new InputOption('club', null, InputOption::VALUE_OPTIONAL, 'Club name slug', null)
+            new InputOption('tenant', null, InputOption::VALUE_OPTIONAL, 'tenant subdomain', null)
         );
         $command->mergeApplicationDefinition();
 
         $input = new ArgvInput();
         $input->bind($command->getDefinition());
-        $clubName = $input->getOption('club');
+        $tenantName = $input->getOption('tenant');
 
-        if ($clubName === null) {
-            $event->getOutput()->write('<error>gyman:</error> ');
+        if ($tenantName === null) {
+            $event->getOutput()->write('<error>redskull:</error> ');
 
             return;
         }
 
-        $input->setOption('em', 'club');
-        $command->getDefinition()->getOption('em')->setDefault('club');
+        $input->setOption('em', 'tenant');
+        $command->getDefinition()->getOption('em')->setDefault('tenant');
 
-        if (!$this->schemaManager->tablesExist(['clubs'])) {
+        if (!$this->schemaManager->tablesExist(['tenants'])) {
             return;
         }
 
-        /** @var Club $club */
-        $club = $this->clubRepository->findOneBySubdomain(new Subdomain($clubName));
+        /** @var Tenant $tenant */
+        $tenant = $this->clubRepository->findOneBySubdomain($tenantName);
 
-        if (!$club) {
-            throw new ClubNotFoundException($clubName);
+        if (!$tenant) {
+            throw new ClubNotFoundException($tenantName);
         }
-
-        $db = $club->getDatabase();
 
         $this->connectionWrapper->forceSwitch(
-            $db->getName(),
-            $db->getUsername(),
-            $db->getPassword()
+            $tenant->dbname,
+            $tenant->user,
+            $tenant->password
         );
 
         $event->getOutput()->writeln(
-            sprintf('<error>%s@%s:</error> ', $db->getUsername(), $db->getName())
+            sprintf('<error>%s@%s:</error> ', $tenant->user, $tenant->dbname)
         );
     }
 

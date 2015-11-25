@@ -2,8 +2,8 @@
 namespace Dende\MultidatabaseBundle\Listener;
 
 use Doctrine\ORM\EntityManager;
-use Gyman\Bundle\AppBundle\Services\SubdomainProvider;
-use Gyman\Bundle\AppBundle\Services\SubdomainProviderInterface;
+use Dende\MultidatabaseBundle\Services\SubdomainProvider;
+use Dende\MultidatabaseBundle\Services\SubdomainProviderInterface;
 use Gyman\Bundle\ClubBundle\Entity\Club;
 use Gyman\Bundle\ClubBundle\Entity\Subdomain;
 use Dende\MultidatabaseBundle\Connection\ConnectionWrapper;
@@ -52,17 +52,17 @@ class DatabaseSwitcher
     {
         $subdomain = $this->subdomainProvider->getSubdomain();
 
-        /** @var Club $club */
-        $club = $this->entityManager->getRepository('ClubBundle:Club')->findOneBySubdomain(new Subdomain($subdomain));
+        /** @var Tenant $tenant */
+        $tenant = $this->entityManager->getRepository('DendeMultidatabaseBundle:Tenant')->findOneBySubdomain($subdomain);
 
-        if (!$club) {
+        if (!$tenant) {
             throw new NotFoundHttpException(sprintf('Subdomain "%s" not found or club not registered.', $subdomain));
         }
 
         $this->clubConnection->forceSwitch(
-            $club->getDatabase()->getName(),
-            $club->getDatabase()->getUsername(),
-            $club->getDatabase()->getPassword()
+            $tenant->dbname,
+            $tenant->user,
+            $tenant->password
         );
     }
 }

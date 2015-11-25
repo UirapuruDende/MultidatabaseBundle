@@ -13,7 +13,7 @@ class ConnectionCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $connection = $container
-            ->getDefinition('doctrine.dbal.club_connection')
-            ->addMethodCall('setCredentialsStorage', [new Reference('gyman.multidatabase.credentials_storage')]);
+            ->getDefinition('doctrine.dbal.tenant_connection')
+            ->addMethodCall('setCredentialsStorage', [new Reference('dende.multidatabase.credentials_storage')]);
     }
 }

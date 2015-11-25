@@ -1,0 +1,139 @@
+<project name="dende.tests" default="test">
+    <target name="reset-db-test">
+        <phingcall target="reset-db">
+            <property name="env" value="test" />
+        </phingcall>
+    </target>
+
+    <target name="clear-build">
+        <fileset dir="./" id="deleteFiles">
+            <include name="build" />
+            <exclude name="**/.gitkeep" />
+        </fileset>
+
+        <delete includeemptydirs="true">
+            <fileset refid="deleteFiles" />
+        </delete>
+
+        <phingcall target="create-build-dirs" />
+    </target>
+
+    <target name="clear-all">
+        <fileset dir="./" id="deleteFiles">
+            <include name="web/uploads/*" />
+            <include name="web/uploads/thumbnails/*" />
+            <include name="build" />
+            <include name="web/css/**" />
+            <include name="web/bundles/**" />
+            <include name="web/flags/**" />
+            <include name="web/fonts/**" />
+            <include name="web/images/**" />
+            <include name="web/js/**" />
+            <exclude name="**/.gitkeep" />
+        </fileset>
+
+        <delete includeemptydirs="true">
+            <fileset refid="deleteFiles" />
+        </delete>
+
+        <phingcall target="create-build-dirs" />
+    </target>
+
+    <target name="create-build-dirs">
+        <mkdir dir="build" />
+        <mkdir dir="build/logs" />
+        <mkdir dir="build/api" />
+        <mkdir dir="build/code-browser" />
+        <mkdir dir="build/coverage" />
+        <mkdir dir="build/pdepend" />
+    </target>
+
+
+    <target name="yamllint">
+        <exec command="${php_bin} ${symfony_console} yaml:lint app" checkreturn="true" passthru="true" />
+        <exec command="${php_bin} ${symfony_console} yaml:lint src" checkreturn="true" passthru="true" />
+    </target>
+
+    <target name="test-phplint">
+        <exec command="find -L ./app -maxdepth 2 -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l" checkreturn="true" passthru="true" />
+        <exec command="find -L ./src -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l" checkreturn="true" passthru="true" />
+    </target>
+
+    <target name="test-twiglint">
+        <exec command="${php_bin} ${symfony_console} twig:lint app/Resources" checkreturn="true" passthru="true" />
+        <exec command="${php_bin} ${symfony_console} twig:lint src" checkreturn="true" passthru="true" />
+    </target>
+
+    <target name="test-phpunit">
+        <if>
+            <not>
+                <isset property="jenkins" />
+            </not>
+            <then>
+                <property name="phpunit_config" value="phpunit.xml" />
+            </then>
+            <else>
+                <property name="phpunit_config" value="phpunit-jenkins.xml" />
+            </else>
+        </if>
+        <echo>Running phpunit tests with ${phpunit_config} config file</echo>
+        <exec command="${bin_phpunit} -c app/${phpunit_config} src/" checkreturn="true" passthru="true" />
+    </target>
+
+    <target name="test-security">
+        <exec command="bin/security-checker security:check --quiet" checkreturn="true" passthru="true" />
+    </target>
+
+    <target name="test" depends="clear-build">
+        <!--<phingcall target="test-phplint" />-->
+        <phingcall target="test-twiglint" />
+        <phingcall target="yamllint" />
+        <phingcall target="test-security" />
+        <phingcall target="phpcs" />
+        <phingcall target="phpcsfixer-dry-run" />
+        <!--<if><isset property="jenkins" /><then><phingcall target="phpcb" /></then></if>-->
+        <if><isset property="jenkins" /><then><phingcall target="phpcpd" /></then></if>
+        <if><isset property="jenkins" /><then><phingcall target="phploc-ci" /></then></if>
+        <phingcall target="phpmd" />
+        <!--<if><isset property="jenkins" /><then><phingcall target="pdepend" /></then></if>-->
+        <if><isset property="jenkins" /><then><phingcall target="phpdoc" /></then></if>
+        <phingcall target="test-phpunit" />
+        <if><isset property="jenkins" /><then><phingcall target="behat" /></then></if>
+    </target>
+
+    <target name="phpcs" description="php code sniffer">
+        <exec command="bin/phpcs -p -s --report-width=120 --report-full --report-checkstyle=build/logs/checkstyle.xml --ignore=**/Tests/** --standard=app/phpcs.xml --extensions=php src/" checkreturn="true" passthru="true" />
+    </target>
+
+    <target name="phantomjs-start" description="Starts phantomjs">
+        <exec command="./node_modules/.bin/phantomjs --webdriver=8643" checkreturn="true" passthru="true" spawn="true" />
+    </target>
+
+    <target name="phantomjs-stop" description="Stops phantomjs">
+        <exec command="pkill -f 'node ./node_modules/.bin/phantomjs --webdriver=8643'" checkreturn="false" passthru="true" />
+    </target>
+
+    <target name="phantomjs-restart" description="Restart phantomjs" depends="phantomjs-stop,phantomjs-start" />
+
+    <target name="start-php-server">
+        <exec command="${php_bin} ${symfony_console} server:start 127.0.0.1:8000" checkreturn="true" passthru="true" spawn="true" />
+    </target>
+
+    <target name="stop-php-server">
+        <exec command="${php_bin} ${symfony_console} server:stop 127.0.0.1:8000" checkreturn="false" passthru="true" />
+    </target>
+
+    <target name="behat" description="Starts behat tests">
+        <phingcall target="stop-php-server" />
+        <phingcall target="phantomjs-stop" />
+
+        <phingcall target="start-php-server" />
+        <phingcall target="phantomjs-start" />
+
+        <phingcall target="reset-db-test" />
+        <exec command='./bin/behat --tags="~@ignore"' checkreturn="true" passthru="true" />
+
+        <phingcall target="phantomjs-stop" />
+        <phingcall target="stop-php-server" />
+    </target>
+</project>

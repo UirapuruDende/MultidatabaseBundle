@@ -1,7 +1,7 @@
 <?php
 namespace Dende\MultidatabaseBundle;
 
-use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
+use Dende\MultidatabaseBundle\DependencyInjection\CompilerPass\ConnectionCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -9,28 +9,23 @@ class DendeMultidatabaseBundle extends Bundle
 {
     public function build(ContainerBuilder $container)
     {
+        $container->addCompilerPass(new ConnectionCompilerPass());
+
         parent::build($container);
-        $this->addRegisterMappingsPass($container);
     }
 
     /**
-     * @param ContainerBuilder $container
+     * Boots the Bundle.
      */
-    private function addRegisterMappingsPass(ContainerBuilder $container)
+    public function boot()
     {
-        $mappings = [realpath(__DIR__ . '/Resources/config/doctrine') => 'Dende\Calendar\Domain'];
+        parent::boot();
 
-        $ormCompilerClass = 'Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass';
-
-        if (class_exists($ormCompilerClass)) {
-            $registerMappingCompilerPass = DoctrineOrmMappingsPass::createYamlMappingDriver(
-                $mappings,
-                ['dende_calendar.model_manager_name'],
-                'dende_calendar.backend_type_orm',
-                ['Calendar' => 'Dende\Calendar\Domain']
-            );
-
-            $container->addCompilerPass($registerMappingCompilerPass);
+        if ($this->container->getParameter('kernel.environment') !== 'prod') {
+            $this->container->get('dende.multidatabase.doctrine_fixtures_load_listener')->setOptions([
+                'default' => $this->container->getParameter('standardfixtures'),
+                'tenant'    => $this->container->getParameter('tenantfixtures'),
+            ]);
         }
     }
 }
