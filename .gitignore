@@ -1,0 +1,13 @@
+/.php_cs.cache
+/vendor/
+/.idea/
+/node_modules/
+/bower_components/
+/Tests/app/logs/*
+/Tests/app/cache/*
+!/Tests/app/cache/.gitkeep
+!/Tests/app/logs/.gitkeep
+/Tests/app/bundles
+/bin/
+tmp*
+composer.phar

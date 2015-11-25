@@ -1,0 +1,35 @@
+{
+    "name": "dende/multidatabase-bundle",
+    "require": {
+        "symfony/symfony": "^2.7",
+        "doctrine/doctrine-bundle": "^1.5",
+        "doctrine/orm": "dev-master",
+        "doctrine/doctrine-fixtures-bundle": "dev-master",
+        "symfony/http-kernel" : "2.7.5",
+        "sensio/framework-extra-bundle": "~3.0",
+        "dende/common-bundle": "dev-master",
+        "liip/functional-test-bundle": "^1.2"
+    },
+    "require-dev": {
+        "symfony/framework-bundle" : "2.7.5",
+        "phpunit/phpunit": "^5.0",
+        "mockery/mockery": "^0.9.4",
+        "fabpot/php-cs-fixer": "2.0.*@dev",
+        "behat/behat": "^3.0",
+        "phing/phing": "*",
+        "twig/extensions": "1.2.*@dev",
+        "symfony/monolog-bundle": "2.7.*"
+    },
+    "authors": [
+        {
+            "name": "Grzegorz Kaszuba",
+            "email": "uirapuruadg@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "Dende\\MultidatabaseBundle\\": "" }
+    },
+    "config": {
+        "bin-dir": "bin"
+    }
+}

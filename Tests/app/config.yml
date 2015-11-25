@@ -1,0 +1,100 @@
+framework:
+    secret: "Three can keep a secret, if two of them are dead."
+    translator:
+      fallback: pl
+    test: ~
+    form: ~
+    router:
+        resource: "%kernel.root_dir%/routing.yml"
+        strict_requirements: ~
+    templating:
+        engines: ['twig']
+    session:
+        storage_id: session.storage.filesystem
+    profiler:
+        collect: true
+        only_exceptions: false
+        enabled: true
+
+    fragments:       ~
+    http_method_override: true
+
+web_profiler:
+    toolbar: true
+    intercept_redirects: false
+
+twig:
+    debug:            true
+    strict_variables: true
+
+fos_rest:
+  param_fetcher_listener: true
+  body_listener:
+    decoders:
+      json: fos_rest.decoder.jsontoform
+  format_listener: true
+  view:
+    view_response_listener: force
+    serialize_null: true
+    failed_validation: 422
+
+sensio_framework_extra:
+    view: { annotations: false }
+
+jms_serializer:
+  handlers:
+    datetime:
+      default_format: "Y-m-d H:i:s"
+      default_timezone: "Europe/Warsaw"
+  metadata:
+    auto_detection: true
+    directories:
+      Domain:
+        namespace_prefix: "Dende\\Calendar\\Domain"
+        path: "%kernel.root_dir%/../../Resources/config/serializer/"
+
+bazinga_hateoas:
+  metadata:
+    cache:                file
+    file_cache:
+      dir:              %kernel.cache_dir%/hateoas
+
+monolog:
+  handlers:
+    main:
+      type: stream
+      path: "%kernel.logs_dir%/%kernel.environment%.log"
+      level: DEBUG
+    doctrine:
+      type: stream
+      path: "%kernel.logs_dir%/doctrine.log"
+      level: DEBUG
+      channels: ["doctrine"]
+
+liip_functional_test: ~
+
+doctrine:
+    dbal:
+      default_connection: default
+      connections:
+        default:
+          driver:   pdo_mysql
+          host:     localhost
+          dbname:   calendar_bundle_test
+          user:     root
+          password: root
+          charset:  UTF8
+          server_version: "5.6"
+    orm:
+        auto_generate_proxy_classes: %kernel.debug%
+        default_entity_manager:   default
+
+        entity_managers:
+          default:
+            auto_mapping: false
+            connection: default
+            mappings: ~
+          viewmodel_default:
+            auto_mapping: false
+            connection: default
+            mappings: ~
