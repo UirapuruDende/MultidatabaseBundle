@@ -21,14 +21,6 @@ class DendeMultidatabaseExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->setParameter("dende_calendar.model_manager_name", $config["model_manager_name"]);
-        $container->setParameter("dende_calendar.viewmodel_manager_name", sprintf("viewmodel_%s", $config["model_manager_name"]));
-
-        if ($config["backend_type"] === "ORM")
-        {
-            $container->setParameter("dende_calendar.backend_type_orm", true);
-        }
-
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
     }

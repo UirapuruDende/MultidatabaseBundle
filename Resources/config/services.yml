@@ -1,4 +1,13 @@
 services:
+
+  dende.multidatabase.club.subscriber:
+      class: Dende\MultidatabaseBundle\Services\ClubSubscriber
+      calls:
+        - [setDatabaseWorker, [@dende.multidatabase.database_worker]]
+        - [setClubEntityManager, [@gyman.club.club_manager] ]
+      tags:
+          - { name: kernel.event_subscriber }
+
   dende.multidatabase.database_switcher:
     class: Dende\MultidatabaseBundle\Listener\DatabaseSwitcher
     scope: request
@@ -16,7 +25,7 @@ services:
     class: Dende\MultidatabaseBundle\DataCollector\DatabaseConnectionsDataCollector
     arguments: [@doctrine.dbal.default_connection, @doctrine.dbal.club_connection]
     tags:
-      - { name: data_collector, template: "GymanMultiDatabaseBundle:Toolbar:DatabaseConnections.html.twig", id: "database_connections" }
+      - { name: data_collector, template: "DendeMultidatabaseBundle:Toolbar:DatabaseConnections.html.twig", id: "database_connections" }
 
   dende.multidatabase.slugify:
     class: Dende\MultidatabaseBundle\Services\Slugify
