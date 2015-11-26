@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f84a9110c01dfee02d03198ab77084c2",
-    "content-hash": "a5d5239987f8519daf5cbdbf96ec17e2",
+    "hash": "d64f0af3196e5ed83fbbb52cf820866e",
+    "content-hash": "dd7e0fe24b94447114815693efe9b39d",
     "packages": [
         {
             "name": "dende/common-bundle",
@@ -876,16 +876,16 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "dev-master",
+            "version": "v2.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/doctrine2.git",
-                "reference": "b980e98ba3908772e3b2a0879440cab454dda37b"
+                "reference": "464b5fdbfbbeb4a65465ac173c4c5d90960f41ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/b980e98ba3908772e3b2a0879440cab454dda37b",
-                "reference": "b980e98ba3908772e3b2a0879440cab454dda37b",
+                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/464b5fdbfbbeb4a65465ac173c4c5d90960f41ff",
+                "reference": "464b5fdbfbbeb4a65465ac173c4c5d90960f41ff",
                 "shasum": ""
             },
             "require": {
@@ -907,7 +907,8 @@
                 "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
             },
             "bin": [
-                "bin/doctrine"
+                "bin/doctrine",
+                "bin/doctrine.php"
             ],
             "type": "library",
             "extra": {
@@ -916,8 +917,8 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Doctrine\\ORM\\": "lib/Doctrine/ORM"
+                "psr-0": {
+                    "Doctrine\\ORM\\": "lib/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -948,7 +949,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2015-11-23 13:27:26"
+            "time": "2015-11-23 12:44:25"
         },
         {
             "name": "jdorn/sql-formatter",
@@ -3120,7 +3121,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "doctrine/orm": 20,
         "doctrine/doctrine-fixtures-bundle": 20,
         "dende/common-bundle": 20,
         "fabpot/php-cs-fixer": 20,
