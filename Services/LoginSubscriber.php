@@ -3,7 +3,7 @@ namespace Dende\MultidatabaseBundle\Services;
 
 use FOS\UserBundle\Event\UserEvent;
 use FOS\UserBundle\FOSUserEvents;
-use Gyman\Bundle\AppBundle\Globals;
+use Dende\MultidatabaseBundle\Globals;
 use Gyman\Bundle\ClubBundle\Entity\Club;
 use Dende\MultidatabaseBundle\Connection\ConnectionWrapper;
 use Gyman\Bundle\UserBundle\Entity\User;

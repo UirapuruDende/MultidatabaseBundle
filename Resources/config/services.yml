@@ -1,12 +1,46 @@
+parameters:
+  tenant_entity_manager: doctrine.orm.default_entity_manager
+  tenant_entity_repository: dende.tenant.repository
+  tenant_connection: doctrine.dbal.tenant_connection
+  tenant_entity_class: "Dende\MultidatabaseBundle\Entity\Tenant"
+  subdomain_provider_service: gst.subdomain_provider
+
+  standardfixtures: []
+  tenantfixtures:
+    - "src/TPN/MainBundle/DataFixtures/ORM"
+
 services:
 
-  dende.multidatabase.club.subscriber:
-      class: Dende\MultidatabaseBundle\Services\ClubSubscriber
-      calls:
-        - [setDatabaseWorker, [@dende.multidatabase.database_worker]]
-        - [setClubEntityManager, [@gyman.club.club_manager] ]
-      tags:
-          - { name: kernel.event_subscriber }
+#  dende.subdomain_name_lister:
+#    class: Dende\MultidatabaseBundle\Listener\SubdomainListener
+#    arguments:
+#      - @=service(parameter('subdomain_provider_service'))
+#    tags:
+#      - {name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
+  dende.subdomain_provider:
+    class: Dende\MultidatabaseBundle\Services\SubdomainProvider
+    arguments:
+      - @request_stack
+      - %base_url%
+
+  gst.subdomain_provider:
+    class: Dende\MultidatabaseBundle\Services\GetStreetTeamSubdomainProvider
+    arguments:
+      - @request_stack
+      - %base_url%
+
+#  dende.tenant.entity_manager:
+#    class: Dende\MultidatabaseBundle\EntityManager\TenantManager
+#    arguments:
+#      - @doctrine.orm.default_entity_manager
+#      - @event_dispatcher
+
+  dende.tenant.repository:
+    class: Dende\MultidatabaseBundle\Entity\TenantRepository
+    factory_method: getRepository
+    factory_service: doctrine.orm.default_entity_manager
+    arguments: [%tenant_entity_class%]
 
   dende.multidatabase.database_switcher:
     class: Dende\MultidatabaseBundle\Listener\DatabaseSwitcher
@@ -14,7 +48,7 @@ services:
     arguments:
       - @=service(parameter('subdomain_provider_service'))
       - @doctrine.orm.entity_manager
-      - @doctrine.dbal.club_connection
+      - @=service(parameter('tenant_connection'))
     tags:
         - { name: kernel.event_listener, method: onKernelRequest, event: kernel.request, priority: 255 }
 
@@ -23,7 +57,7 @@ services:
 
   dende.multidatabase.collector.db_connections:
     class: Dende\MultidatabaseBundle\DataCollector\DatabaseConnectionsDataCollector
-    arguments: [@doctrine.dbal.default_connection, @doctrine.dbal.club_connection]
+    arguments: [@doctrine.dbal.default_connection, @=service(parameter('tenant_connection'))]
     tags:
       - { name: data_collector, template: "DendeMultidatabaseBundle:Toolbar:DatabaseConnections.html.twig", id: "database_connections" }
 
@@ -39,23 +73,23 @@ services:
     calls:
       - [setSlugifier, [@dende.multidatabase.slugify]]
       - [setDefaultConnection, [@doctrine.dbal.default_connection]]
-      - [setClubConnection, [@doctrine.dbal.club_connection]]
+      - [setClubConnection, [@=service(parameter('tenant_connection'))]]
       - [setDefaultEntityManager, [@doctrine.orm.default_entity_manager]]
-      - [setClubEntityManager, [@doctrine.orm.club_entity_manager]]
+      - [setClubEntityManager, [@=service(parameter('tenant_entity_manager'))]]
 
   dende.multidatabase.club_connection_command_listener:
       class: Dende\MultidatabaseBundle\Listener\ClubConnectionCommandListener
       calls:
-        - [setClubRepository, [@gyman.club.repository]]
-        - [setConnectionWrapper, [@doctrine.dbal.club_connection]]
+        - [setClubRepository, [@=service(parameter('tenant_entity_repository'))]]
+        - [setConnectionWrapper, [@=service(parameter('tenant_connection'))]]
         - [setSchemaManager, ["@=service('doctrine.dbal.default_connection').getSchemaManager()"]]
       tags:
         - { name: kernel.event_listener, event: console.command, method: onConsoleCommand, priority: 255 }
 
   dende.multidatabase.doctrine_fixtures_load_listener:
       class: Dende\MultidatabaseBundle\Listener\DoctrineFixturesLoadListener
-#      calls:
-#        - [setOptions, [{default: %standardFixtures%, club: %clubFixtures% }]]
+      calls:
+        - [setOptions, [{default: %standardFixtures%, tenant: %tenantfixtures% }]]
       tags:
         - { name: kernel.event_listener, event: console.command, method: onConsoleCommand }
 

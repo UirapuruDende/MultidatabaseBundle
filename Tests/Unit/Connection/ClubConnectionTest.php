@@ -57,7 +57,7 @@ class ClubConnectionTest extends \PHPUnit_Framework_TestCase
         $connectionWrapperMock = m::mock('Dende\MultidatabaseBundle\Connection\ConnectionWrapper');
         $connectionWrapperMock->shouldReceive('forceSwitch')->with('someName', 'someUser', 'somePass')->once();
 
-        $clubMock = m::mock('Club');
+        $clubMock = m::mock('tenant');
         $clubMock->shouldReceive('getDatabase')->once()->andReturn($dbConfig);
 
         $userMock = m::mock('Gyman\Bundle\UserBundle\Entity\User');
@@ -82,7 +82,7 @@ class ClubConnectionTest extends \PHPUnit_Framework_TestCase
         $connectionWrapperMock = m::mock('Dende\MultidatabaseBundle\Connection\ConnectionWrapper');
         $connectionWrapperMock->shouldReceive('forceSwitch')->with('someName', 'someUser', 'somePass')->once();
 
-        $clubMock = m::mock('Club');
+        $clubMock = m::mock('tenant');
         $clubMock->shouldReceive('getDatabase')->once()->andReturn($dbConfig);
 
         $userMock = m::mock('Gyman\Bundle\UserBundle\Entity\User');

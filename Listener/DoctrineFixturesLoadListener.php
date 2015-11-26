@@ -30,15 +30,15 @@ final class DoctrineFixturesLoadListener
 
         $input = new ArgvInput();
         $input->bind($command->getDefinition());
-        $clubName = $input->getOption('club');
+        $tenantName = $input->getOption('tenant');
 
-        if ($clubName === null) {
+        if ($tenantName === null) {
             $event->getOutput()->writeln(sprintf('Using <info>standard</info> fixtures: <info>%s</info>', implode(',', $this->options['default'])));
             $command->getDefinition()->getOption('fixtures')->setDefault($this->options['default']);
         } else {
-            $event->getOutput()->writeln(sprintf('Using <info>custom</info> fixtures: <info>%s</info>', implode(',', $this->options['club'])));
-            $command->getDefinition()->getOption('fixtures')->setDefault($this->options['club']);
-            $command->getDefinition()->getOption('em')->setDefault('club');
+            $event->getOutput()->writeln(sprintf('Using <info>custom</info> fixtures: <info>%s</info>', implode(',', $this->options['tenant'])));
+            $command->getDefinition()->getOption('fixtures')->setDefault($this->options['tenant']);
+            $command->getDefinition()->getOption('em')->setDefault('tenant');
         }
     }
 

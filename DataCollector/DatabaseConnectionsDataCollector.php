@@ -29,9 +29,9 @@ class DatabaseConnectionsDataCollector extends DataCollector
         $this->data['default'] = $this->defaultConnection->getDatabase();
 
         if ($this->clubConnection->isConnected()) {
-            $this->data['club'] = $this->clubConnection->getDatabase();
+            $this->data['tenant'] = $this->clubConnection->getDatabase();
         } else {
-            $this->data['club'] = 'disconnected';
+            $this->data['tenant'] = 'disconnected';
         }
     }
 
@@ -42,7 +42,7 @@ class DatabaseConnectionsDataCollector extends DataCollector
 
     public function getClub()
     {
-        return $this->data['club'];
+        return $this->data['tenant'];
     }
 
     public function getName()

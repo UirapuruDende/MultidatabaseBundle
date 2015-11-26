@@ -1,7 +1,7 @@
 <?php
 namespace Dende\MultidatabaseBundle\Controller;
 
-use Gyman\Bundle\AppBundle\Globals;
+use Dende\MultidatabaseBundle\Globals;
 use Gyman\Bundle\ClubBundle\Entity\Club;
 use Dende\MultidatabaseBundle\Connection\ConnectionWrapper;
 use Dende\MultidatabaseBundle\Services\CredentialsStorage;
@@ -43,7 +43,7 @@ class DefaultController extends Controller
         if ($form->isValid()) {
 
             /** @var Club $club */
-            $club = $form->getData()['club'];
+            $club = $form->getData()['tenant'];
 
             /* @var User $user */
             $user = $this->getUser();
@@ -61,7 +61,7 @@ class DefaultController extends Controller
             );
 
             /* @var ConnectionWrapper $connection */
-            $connection = $this->get('doctrine.dbal.club_connection');
+            $connection = $this->get('doctrine.dbal.tenant_connection');
             $connection->forceSwitch(
                 $db[CredentialsStorage::PARAM_BASE],
                 $db[CredentialsStorage::PARAM_USER],

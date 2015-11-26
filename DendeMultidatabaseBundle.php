@@ -24,7 +24,7 @@ class DendeMultidatabaseBundle extends Bundle
         if ($this->container->getParameter('kernel.environment') !== 'prod') {
             $this->container->get('dende.multidatabase.doctrine_fixtures_load_listener')->setOptions([
                 'default' => $this->container->getParameter('standardfixtures'),
-                'club'    => $this->container->getParameter('clubfixtures'),
+                'tenant'    => $this->container->getParameter('tenantfixtures'),
             ]);
         }
     }
