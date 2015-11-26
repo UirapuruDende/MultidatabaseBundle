@@ -24,7 +24,7 @@ class DatabaseSwitcher
     /**
      * @var ConnectionWrapper
      */
-    private $clubConnection;
+    private $tenantConnection;
 
     /**
      * @var SubdomainProvider
@@ -42,7 +42,7 @@ class DatabaseSwitcher
     {
         $this->subdomainProvider = $provider;
         $this->entityManager = $entityManager;
-        $this->clubConnection = $connectionWrapper;
+        $this->tenantConnection = $connectionWrapper;
     }
 
     /**
@@ -52,16 +52,18 @@ class DatabaseSwitcher
     {
         $subdomain = $this->subdomainProvider->getSubdomain();
 
-        /** @var Tenant $tenant */
-        $tenant = $this->entityManager->getRepository('DendeMultidatabaseBundle:Tenant')->findOneBySubdomain($subdomain);
+        /** @var Club $entity */
+        $entity = $this->entityManager->getRepository('ClubBundle:Club')->findOneBySubdomain($subdomain);
 
-        if (!$tenant) {
+        if (!$entity) {
             throw new NotFoundHttpException(sprintf('Subdomain "%s" not found or club not registered.', $subdomain));
         }
 
-        $this->clubConnection->forceSwitch(
+        $tenant = $entity->getTenant();
+
+        $this->tenantConnection->forceSwitch(
             $tenant->dbname,
-            $tenant->user,
+            $tenant->username,
             $tenant->password
         );
     }

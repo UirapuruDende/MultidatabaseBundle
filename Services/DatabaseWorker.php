@@ -188,7 +188,7 @@ final class DatabaseWorker
 
     public function migrate(Command $command, Output $output, ArgvInput $input)
     {
-        $clubs = $this->defaultEntityManager->getRepository('DendeMultidatabaseBundle:Tenant')->findAll();
+        $clubs = $this->defaultEntityManager->getRepository('ClubBundle:Club')->findAll();
         $count = count($clubs);
 
         $input->setOption('em', 'tenant');
@@ -211,7 +211,7 @@ final class DatabaseWorker
 
     public function generateMigrations(Command $command, Output $output, ArgvInput $input)
     {
-        $clubs = $this->defaultEntityManager->getRepository('DendeMultidatabaseBundle:Tenant')->findAll();
+        $clubs = $this->defaultEntityManager->getRepository('ClubBundle:Club')->findAll();
         $singleClub = array_pop($clubs);
 
         $this->updateClubConnection($singleClub);
