@@ -21,6 +21,7 @@ class DatabaseConnectionsDataCollector extends DataCollector
     public function __construct(Connection $defaultConnection, Connection $clubConnection)
     {
         $this->clubConnection = $clubConnection;
+
         $this->defaultConnection = $defaultConnection;
     }
 
@@ -40,7 +41,7 @@ class DatabaseConnectionsDataCollector extends DataCollector
         return $this->data['default'];
     }
 
-    public function getClub()
+    public function getTenant()
     {
         return $this->data['tenant'];
     }
