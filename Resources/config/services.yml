@@ -1,40 +1,22 @@
 parameters:
-  tenant_entity_manager: doctrine.orm.default_entity_manager
-  tenant_entity_repository: gyman.club.repository
-  tenant_connection: doctrine.dbal.tenant_connection
-  subdomain_provider_service: dende.subdomain_provider
-
   standardfixtures: []
   tenantfixtures:
     - "src/TPN/MainBundle/DataFixtures/ORM"
 
 services:
-
-#  dende.subdomain_name_lister:
-#    class: Dende\MultidatabaseBundle\Listener\SubdomainListener
-#    arguments:
-#      - @=service(parameter('subdomain_provider_service'))
-#    tags:
-#      - {name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
-
   dende.multidatabase.database_switcher:
     class: Dende\MultidatabaseBundle\Listener\DatabaseSwitcher
-    scope: request
     arguments:
-      - @=service(parameter('subdomain_provider_service'))
-      - @doctrine.orm.entity_manager
-      - @=service(parameter('tenant_connection'))
+      - @=service(parameter('dende_multidatabase.connection_name'))
+      - @=service(parameter('dende_multidatabase.tenant_provider'))
     tags:
         - { name: kernel.event_listener, method: onKernelRequest, event: kernel.request, priority: 255 }
 
-  dende.multidatabase.credentials_storage:
-    class: Dende\MultidatabaseBundle\Services\CredentialsStorage
-
-  dende.multidatabase.collector.db_connections:
-    class: Dende\MultidatabaseBundle\DataCollector\DatabaseConnectionsDataCollector
-    arguments: [@doctrine.dbal.default_connection, @=service(parameter('tenant_connection'))]
-    tags:
-      - { name: data_collector, template: "DendeMultidatabaseBundle:Toolbar:DatabaseConnections.html.twig", id: "database_connections" }
+#  dende.multidatabase.collector.db_connections:
+#    class: Dende\MultidatabaseBundle\DataCollector\DatabaseConnectionsDataCollector
+#    arguments: [@doctrine.dbal.default_connection, @=service(parameter('dende_multidatabase.connection_name'))]
+#    tags:
+#      - { name: data_collector, template: "DendeMultidatabaseBundle:Toolbar:DatabaseConnections.html.twig", id: "database_connections" }
 
   dende.multidatabase.slugify:
     class: Dende\MultidatabaseBundle\Services\Slugify
@@ -48,7 +30,7 @@ services:
     calls:
       - [setSlugifier, [@dende.multidatabase.slugify]]
       - [setDefaultConnection, [@doctrine.dbal.default_connection]]
-      - [setClubConnection, [@=service(parameter('tenant_connection'))]]
+      - [setClubConnection, [@=service(parameter('dende_multidatabase.connection_name'))]]
       - [setDefaultEntityManager, [@doctrine.orm.default_entity_manager]]
       - [setClubEntityManager, [@=service(parameter('tenant_entity_manager'))]]
 
@@ -56,7 +38,7 @@ services:
       class: Dende\MultidatabaseBundle\Listener\ClubConnectionCommandListener
       calls:
         - [setClubRepository, [@=service(parameter('tenant_entity_repository'))]]
-        - [setConnectionWrapper, [@=service(parameter('tenant_connection'))]]
+        - [setConnectionWrapper, [@=service(parameter('dende_multidatabase.connection_name'))]]
         - [setSchemaManager, ["@=service('doctrine.dbal.default_connection').getSchemaManager()"]]
       tags:
         - { name: kernel.event_listener, event: console.command, method: onConsoleCommand, priority: 255 }
@@ -95,10 +77,3 @@ services:
     parent: dende.multidatabase.command
     tags:
       - { name: console.command }
-
-  dende.multidatabase.form.club_switch:
-    class: Dende\MultidatabaseBundle\Form\ClubSwitchType
-    arguments: [@security.context]
-    tags:
-      - { name: form.type, alias: gyman_default_clubswitch }
-

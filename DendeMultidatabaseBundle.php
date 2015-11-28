@@ -1,19 +1,10 @@
 <?php
 namespace Dende\MultidatabaseBundle;
 
-use Dende\MultidatabaseBundle\DependencyInjection\CompilerPass\ConnectionCompilerPass;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class DendeMultidatabaseBundle extends Bundle
 {
-    public function build(ContainerBuilder $container)
-    {
-        $container->addCompilerPass(new ConnectionCompilerPass());
-
-        parent::build($container);
-    }
-
     /**
      * Boots the Bundle.
      */

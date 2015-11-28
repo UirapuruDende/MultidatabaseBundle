@@ -19,6 +19,14 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('dende_multidatabase');
 
+        $rootNode
+            ->children()
+            ->scalarNode('provider')->defaultValue('dende.tenant_provider')->end()
+            ->scalarNode('connection')->defaultValue('tenant')->end()
+            ->scalarNode('entity_manager')->defaultValue('tenant')->end()
+            ->end()
+        ;
+
         return $treeBuilder;
     }
 }

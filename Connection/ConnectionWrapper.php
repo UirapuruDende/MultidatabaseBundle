@@ -7,31 +7,17 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Event\ConnectionEventArgs;
 use Doctrine\DBAL\Events;
-use Dende\MultidatabaseBundle\Exception\CredentialsUnchangedException;
-use Dende\MultidatabaseBundle\Exception\SessionCredentialsNotInitializedException;
-use Dende\MultidatabaseBundle\Services\CredentialsStorage;
 
+/**
+ * Class ConnectionWrapper
+ * @package Dende\MultidatabaseBundle\Connection
+ */
 class ConnectionWrapper extends Connection
 {
-    private $platform;
-
-    /**
-     * @var CredentialsStorage
-     */
-    private $credentialsStorage;
-
     /**
      * @var bool
      */
     private $isConnected = false;
-
-    /**
-     * @param CredentialsStorage $credentialsStorage
-     */
-    public function setCredentialsStorage(CredentialsStorage $credentialsStorage)
-    {
-        $this->credentialsStorage = $credentialsStorage;
-    }
 
     /**
      * @param array $params
@@ -42,22 +28,27 @@ class ConnectionWrapper extends Connection
     public function __construct(
         array $params, Driver $driver, Configuration $config = null, EventManager $eventManager = null
     ) {
-        $this->setCredentialsStorage(new CredentialsStorage());
+        $this->params = $params;
 
         parent::__construct($params, $driver, $config, $eventManager);
     }
 
-    public function forceSwitch($dbName, $dbUser, $dbPassword)
+    /**
+     * @param $host
+     * @param $dbname
+     * @param $username
+     * @param $password
+     */
+    public function forceSwitch($host, $dbname, $username, $password)
     {
-        try {
-            $this->credentialsStorage->updateCredentials($dbName, $dbUser, $dbPassword);
-        } catch (CredentialsUnchangedException $e) {
-            return;
-        }
-
         if ($this->isConnected()) {
             $this->close();
         }
+
+        $this->params['host'] = $host;
+        $this->params['dbname'] = $dbname;
+        $this->params['username'] = $username;
+        $this->params['password'] = $password;
 
         $this->connect();
     }
@@ -71,17 +62,11 @@ class ConnectionWrapper extends Connection
             return true;
         }
 
-        try {
-            $params = $this->credentialsStorage->updateParamsArray($this->getParams());
-        } catch (SessionCredentialsNotInitializedException $e) {
-            return false;
-        }
-
         $this->_conn = $this->_driver->connect(
-            $params,
-            $params[CredentialsStorage::PARAM_USER],
-            $params[CredentialsStorage::PARAM_PASS],
-            $params['driverOptions']
+            $this->params,
+            $this->params['username'],
+            $this->params['password'],
+            $this->params['driverOptions']
         );
 
         if ($this->_eventManager->hasListeners(Events::postConnect)) {
