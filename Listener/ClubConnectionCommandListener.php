@@ -1,10 +1,10 @@
 <?php
 namespace Dende\MultidatabaseBundle\Listener;
 
+use Dende\MultidatabaseBundle\DTO\Tenant;
+use Dende\MultidatabaseBundle\Services\TenantProviderInterface;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\ORM\EntityRepository;
-use Gyman\Bundle\ClubBundle\Entity\Club;
-use Gyman\Bundle\ClubBundle\Entity\Subdomain;
 use Dende\MultidatabaseBundle\Connection\ConnectionWrapper;
 use Dende\MultidatabaseBundle\Exception\ClubNotFoundException;
 use Symfony\Component\Console\Command\Command;
@@ -15,11 +15,6 @@ use Symfony\Component\Console\Input\InputOption;
 final class ClubConnectionCommandListener
 {
     /**
-     * @var EntityRepository
-     */
-    private $clubRepository;
-
-    /**
      * @var ConnectionWrapper
      */
     private $connectionWrapper;
@@ -28,6 +23,31 @@ final class ClubConnectionCommandListener
      * @var AbstractSchemaManager
      */
     private $schemaManager;
+
+    /**
+     * @var
+     */
+    private $config;
+
+    /**
+     * @var TenantProviderInterface
+     */
+    private $tenantProvider;
+
+    /**
+     * ClubConnectionCommandListener constructor.
+     * @param TenantProviderInterface $tenantProvider
+     * @param ConnectionWrapper $connectionWrapper
+     * @param AbstractSchemaManager $schemaManager
+     * @param array $config
+     */
+    public function __construct(TenantProviderInterface $tenantProvider, ConnectionWrapper $connectionWrapper, AbstractSchemaManager $schemaManager, $config)
+    {
+        $this->tenantProvider = $tenantProvider;
+        $this->connectionWrapper = $connectionWrapper;
+        $this->schemaManager = $schemaManager;
+        $this->config = $config;
+    }
 
     /**
      * @param ConsoleCommandEvent $event
@@ -42,42 +62,29 @@ final class ClubConnectionCommandListener
         }
 
         $command->getApplication()->getDefinition()->addOption(
-            new InputOption('tenant', null, InputOption::VALUE_OPTIONAL, 'tenant subdomain', null)
+            new InputOption($this->config['parameterName'], null, InputOption::VALUE_OPTIONAL, $this->config['parameterDescription'], null)
         );
         $command->mergeApplicationDefinition();
 
         $input = new ArgvInput();
         $input->bind($command->getDefinition());
-        $tenantName = $input->getOption('tenant');
+        $tenantName = $input->getOption($this->config['parameterName']);
 
         if ($tenantName === null) {
-            $event->getOutput()->write('<error>redskull:</error> ');
-
+            $event->getOutput()->write('<error>default:</error> ');
             return;
         }
 
-        $input->setOption('em', 'tenant');
-        $command->getDefinition()->getOption('em')->setDefault('tenant');
-
-        if (!$this->schemaManager->tablesExist(['tenants'])) {
-            return;
-        }
+        $input->setOption('em', $this->config['modelManagerName']);
+        $command->getDefinition()->getOption('em')->setDefault($this->config['modelManagerName']);
 
         /** @var Tenant $tenant */
-        $tenant = $this->clubRepository->findOneBySubdomain($tenantName);
+        $tenant = $this->tenantProvider->getTenant($tenantName);
 
-        if (!$tenant) {
-            throw new ClubNotFoundException($tenantName);
-        }
-
-        $this->connectionWrapper->forceSwitch(
-            $tenant->dbname,
-            $tenant->user,
-            $tenant->password
-        );
+        $this->connectionWrapper->forceSwitch($tenant->host, $tenant->databaseName, $tenant->username, $tenant->password);
 
         $event->getOutput()->writeln(
-            sprintf('<error>%s@%s:</error> ', $tenant->user, $tenant->dbname)
+            sprintf('<error>%s@%s:</error> ', $tenant->username, $tenant->databaseName)
         );
     }
 

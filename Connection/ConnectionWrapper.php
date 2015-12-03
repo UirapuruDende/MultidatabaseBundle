@@ -47,7 +47,7 @@ class ConnectionWrapper extends Connection
 
         $this->params['host'] = $host;
         $this->params['dbname'] = $dbname;
-        $this->params['username'] = $username;
+        $this->params['user'] = $username;
         $this->params['password'] = $password;
 
         $this->connect();
@@ -64,7 +64,7 @@ class ConnectionWrapper extends Connection
 
         $this->_conn = $this->_driver->connect(
             $this->params,
-            $this->params['username'],
+            $this->params['user'],
             $this->params['password'],
             $this->params['driverOptions']
         );

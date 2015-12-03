@@ -8,22 +8,8 @@ namespace Dende\MultidatabaseBundle\Services;
 interface TenantProviderInterface
 {
     /**
-     * @return string
+     * @param string|null $tenant
+     * @return Tenant
      */
-    public function getDatabaseHost();
-
-    /**
-     * @return string
-     */
-    public function getDatabaseName();
-
-    /**
-     * @return string
-     */
-    public function getUsername();
-
-    /**
-     * @return string
-     */
-    public function getPassword();
+    public function getTenant($tenant = null);
 }

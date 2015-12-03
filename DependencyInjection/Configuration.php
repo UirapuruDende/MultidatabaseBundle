@@ -24,6 +24,13 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('provider')->defaultValue('dende.tenant_provider')->end()
             ->scalarNode('connection')->defaultValue('tenant')->end()
             ->scalarNode('entity_manager')->defaultValue('tenant')->end()
+            ->scalarNode('parameter_name')->defaultValue('tenant')->end()
+            ->scalarNode('parameter_description')->defaultValue('Tenant\'s id')->end()
+            ->arrayNode('fixtures')
+                ->children()
+                ->arrayNode("default")->prototype('scalar')->end()->end()
+                ->arrayNode("tenant")->prototype('scalar')->end()->end()
+                ->end()
             ->end()
         ;
 

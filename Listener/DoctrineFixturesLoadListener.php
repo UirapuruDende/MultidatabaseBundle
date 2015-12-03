@@ -7,19 +7,38 @@ use Symfony\Component\Console\Input\ArgvInput;
 
 final class DoctrineFixturesLoadListener
 {
+
+    /**
+     * @var string
+     */
+    private $entityManagerName;
+
     /**
      * @var array
      */
-    private $options;
+    private $fixtures;
 
     /**
-     * @param array $options
+     * @var string
      */
-    public function setOptions($options)
+    private $parameterName;
+
+    /**
+     * DoctrineFixturesLoadListener constructor.
+     * @param string $entityManagerName
+     * @param $parameterName
+     * @param array $fixtures
+     */
+    public function __construct($entityManagerName, $parameterName, array $fixtures)
     {
-        $this->options = $options;
+        $this->entityManagerName = $entityManagerName;
+        $this->parameterName = $parameterName;
+        $this->fixtures = $fixtures;
     }
 
+    /**
+     * @param ConsoleCommandEvent $event
+     */
     public function onConsoleCommand(ConsoleCommandEvent $event)
     {
         $command = $event->getCommand();
@@ -30,15 +49,15 @@ final class DoctrineFixturesLoadListener
 
         $input = new ArgvInput();
         $input->bind($command->getDefinition());
-        $tenantName = $input->getOption('tenant');
+        $tenantName = $input->getOption($this->parameterName);
 
         if ($tenantName === null) {
-            $event->getOutput()->writeln(sprintf('Using <info>standard</info> fixtures: <info>%s</info>', implode(',', $this->options['default'])));
-            $command->getDefinition()->getOption('fixtures')->setDefault($this->options['default']);
+            $event->getOutput()->writeln(sprintf('Using <info>standard</info> fixtures: <info>%s</info>', implode(',', $this->fixtures['default'])));
+            $command->getDefinition()->getOption('fixtures')->setDefault($this->fixtures['default']);
         } else {
-            $event->getOutput()->writeln(sprintf('Using <info>custom</info> fixtures: <info>%s</info>', implode(',', $this->options['tenant'])));
-            $command->getDefinition()->getOption('fixtures')->setDefault($this->options['tenant']);
-            $command->getDefinition()->getOption('em')->setDefault('tenant');
+            $event->getOutput()->writeln(sprintf('Using <info>custom</info> fixtures: <info>%s</info>', implode(',', $this->fixtures['tenant'])));
+            $command->getDefinition()->getOption('fixtures')->setDefault($this->fixtures['tenant']);
+            $command->getDefinition()->getOption('em')->setDefault($this->entityManagerName);
         }
     }
 

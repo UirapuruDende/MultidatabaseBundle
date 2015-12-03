@@ -5,7 +5,7 @@ namespace Dende\MultidatabaseBundle\DTO;
  * Class Tenant
  * @package Dende\MultidatabaseBundle\DTO
  */
-class Tenant
+final class Tenant
 {
     /**
      * @var string

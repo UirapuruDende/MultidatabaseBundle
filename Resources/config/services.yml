@@ -1,8 +1,3 @@
-parameters:
-  standardfixtures: []
-  tenantfixtures:
-    - "src/TPN/MainBundle/DataFixtures/ORM"
-
 services:
   dende.multidatabase.database_switcher:
     class: Dende\MultidatabaseBundle\Listener\DatabaseSwitcher
@@ -12,11 +7,11 @@ services:
     tags:
         - { name: kernel.event_listener, method: onKernelRequest, event: kernel.request, priority: 255 }
 
-#  dende.multidatabase.collector.db_connections:
-#    class: Dende\MultidatabaseBundle\DataCollector\DatabaseConnectionsDataCollector
-#    arguments: [@doctrine.dbal.default_connection, @=service(parameter('dende_multidatabase.connection_name'))]
-#    tags:
-#      - { name: data_collector, template: "DendeMultidatabaseBundle:Toolbar:DatabaseConnections.html.twig", id: "database_connections" }
+  dende.multidatabase.collector.db_connections:
+    class: Dende\MultidatabaseBundle\DataCollector\DatabaseConnectionsDataCollector
+    arguments: [@doctrine.dbal.default_connection, @=service(parameter('dende_multidatabase.connection_name'))]
+    tags:
+      - { name: data_collector, template: "DendeMultidatabaseBundle:Toolbar:DatabaseConnections.html.twig", id: "database_connections" }
 
   dende.multidatabase.slugify:
     class: Dende\MultidatabaseBundle\Services\Slugify
@@ -24,7 +19,6 @@ services:
   dende.multidatabase.database_worker:
     class: Dende\MultidatabaseBundle\Services\DatabaseWorker
     arguments:
-#      - "%club_database_name_template%"
       - "%database_user%"
       - "%database_password%"
     calls:
@@ -32,21 +26,28 @@ services:
       - [setDefaultConnection, [@doctrine.dbal.default_connection]]
       - [setClubConnection, [@=service(parameter('dende_multidatabase.connection_name'))]]
       - [setDefaultEntityManager, [@doctrine.orm.default_entity_manager]]
-      - [setClubEntityManager, [@=service(parameter('tenant_entity_manager'))]]
+      - [setClubEntityManager, [@=service(parameter('dende_multidatabase.model_manager_name'))]]
 
   dende.multidatabase.club_connection_command_listener:
       class: Dende\MultidatabaseBundle\Listener\ClubConnectionCommandListener
-      calls:
-        - [setClubRepository, [@=service(parameter('tenant_entity_repository'))]]
-        - [setConnectionWrapper, [@=service(parameter('dende_multidatabase.connection_name'))]]
-        - [setSchemaManager, ["@=service('doctrine.dbal.default_connection').getSchemaManager()"]]
+      arguments:
+        - @=service(parameter('dende_multidatabase.tenant_provider'))
+        - @=service(parameter('dende_multidatabase.connection_name'))
+        - @=service('doctrine.dbal.default_connection').getSchemaManager()
+        -
+          parameterName: %dende_multidatabase.parameter_name%
+          parameterDescription: %dende_multidatabase.parameter_description%
+          modelManagerName: %dende_multidatabase.model_manager_name%
+
       tags:
         - { name: kernel.event_listener, event: console.command, method: onConsoleCommand, priority: 255 }
 
   dende.multidatabase.doctrine_fixtures_load_listener:
       class: Dende\MultidatabaseBundle\Listener\DoctrineFixturesLoadListener
-      calls:
-        - [setOptions, [{default: %standardFixtures%, tenant: %tenantfixtures% }]]
+      arguments:
+        - %dende_multidatabase.model_manager_name%
+        - %dende_multidatabase.parameter_name%
+        - %dende_multidatabase.fixtures%
       tags:
         - { name: kernel.event_listener, event: console.command, method: onConsoleCommand }
 

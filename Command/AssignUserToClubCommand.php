@@ -34,7 +34,7 @@ class AssignUserToClubCommand extends AbstractCommand
         }
 
         /** @var Club $club */
-        $club = $em->getRepository('ClubBundle:Club')->findOneBySubdomain(new Subdomain($arguments['subdomain']));
+        $club = $em->getRepository('ClubBundle:Club')->findOneBySubdomain($arguments['subdomain']);
 
         if (is_null($club)) {
             throw new \Exception('Club not found');

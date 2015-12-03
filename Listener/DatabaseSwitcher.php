@@ -1,6 +1,7 @@
 <?php
 namespace Dende\MultidatabaseBundle\Listener;
 
+use Dende\MultidatabaseBundle\DTO\Tenant;
 use Dende\MultidatabaseBundle\Services\TenantProviderInterface;
 use Dende\MultidatabaseBundle\Connection\ConnectionWrapper;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -37,11 +38,8 @@ class DatabaseSwitcher
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
-        $this->tenantConnection->forceSwitch(
-            $this->tenantProvider->getDatabaseHost(),
-            $this->tenantProvider->getDatabaseName(),
-            $this->tenantProvider->getUsername(),
-            $this->tenantProvider->getPassword()
-        );
+        /** @var Tenant $tenant */
+        $tenant = $this->tenantProvider->getTenant();
+        $this->tenantConnection->forceSwitch($tenant->host, $tenant->databaseName, $tenant->username, $tenant->password);
     }
 }
