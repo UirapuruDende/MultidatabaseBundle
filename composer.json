@@ -5,13 +5,13 @@
         "doctrine/doctrine-bundle": "^1.5",
         "doctrine/orm": "2.*",
         "doctrine/doctrine-fixtures-bundle": "*",
-        "symfony/http-kernel" : "2.7.5",
+        "symfony/http-kernel" : "^2.7",
         "sensio/framework-extra-bundle": "~3.0",
         "dende/common-bundle": "*",
         "liip/functional-test-bundle": "^1.2"
     },
     "require-dev": {
-        "symfony/framework-bundle" : "2.7.5",
+        "symfony/framework-bundle" : "^2.7",
         "phpunit/phpunit": "^5.0",
         "mockery/mockery": "^0.9.4",
         "fabpot/php-cs-fixer": "2.0.*@dev",
