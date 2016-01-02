@@ -68,6 +68,12 @@ final class ClubConnectionCommandListener
 
         $input = new ArgvInput();
         $input->bind($command->getDefinition());
+
+        if(!$input->hasOption($this->config["parameterName"])) {
+            $event->getOutput()->write('<error>default:</error> ');
+            return;
+        }
+
         $tenantName = $input->getOption($this->config['parameterName']);
 
         if ($tenantName === null) {

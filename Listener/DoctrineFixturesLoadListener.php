@@ -49,6 +49,11 @@ final class DoctrineFixturesLoadListener
 
         $input = new ArgvInput();
         $input->bind($command->getDefinition());
+
+        if(!$input->hasOption($this->parameterName)) {
+            return;
+        }
+
         $tenantName = $input->getOption($this->parameterName);
 
         if ($tenantName === null) {
