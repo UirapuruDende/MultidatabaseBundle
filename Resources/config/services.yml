@@ -38,7 +38,6 @@ services:
           parameterName: %dende_multidatabase.parameter_name%
           parameterDescription: %dende_multidatabase.parameter_description%
           modelManagerName: %dende_multidatabase.model_manager_name%
-
       tags:
         - { name: kernel.event_listener, event: console.command, method: onConsoleCommand, priority: 255 }
 

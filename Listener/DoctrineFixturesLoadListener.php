@@ -47,22 +47,18 @@ final class DoctrineFixturesLoadListener
             return;
         }
 
-        $input = new ArgvInput();
-        $input->bind($command->getDefinition());
+        $definition = $command->getDefinition();
 
-        if(!$input->hasOption($this->parameterName)) {
-            return;
-        }
+        $input = $event->getInput();
+//        $input->bind($command->getDefinition());
 
-        $tenantName = $input->getOption($this->parameterName);
-
-        if ($tenantName === null) {
+        if (is_null($input->getOption($this->parameterName))) {
             $event->getOutput()->writeln(sprintf('Using <info>standard</info> fixtures: <info>%s</info>', implode(',', $this->fixtures['default'])));
-            $command->getDefinition()->getOption('fixtures')->setDefault($this->fixtures['default']);
+            $definition->getOption('fixtures')->setDefault($this->fixtures['default']);
         } else {
             $event->getOutput()->writeln(sprintf('Using <info>custom</info> fixtures: <info>%s</info>', implode(',', $this->fixtures['tenant'])));
-            $command->getDefinition()->getOption('fixtures')->setDefault($this->fixtures['tenant']);
-            $command->getDefinition()->getOption('em')->setDefault($this->entityManagerName);
+            $definition->getOption('fixtures')->setDefault($this->fixtures['tenant']);
+            $definition->getOption('em')->setDefault($this->entityManagerName);
         }
     }
 

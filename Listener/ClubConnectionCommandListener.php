@@ -56,25 +56,25 @@ final class ClubConnectionCommandListener
     public function onConsoleCommand(ConsoleCommandEvent $event)
     {
         $command = $event->getCommand();
+        $input = $event->getInput();
+        $paramName = $this->config['parameterName'];
 
         if (!$this->isProperCommand($command)) {
             return;
         }
 
-        $command->getApplication()->getDefinition()->addOption(
-            new InputOption($this->config['parameterName'], null, InputOption::VALUE_OPTIONAL, $this->config['parameterDescription'], null)
+        $command->getDefinition()->addOption(
+            new InputOption($paramName, null, InputOption::VALUE_OPTIONAL, $this->config['parameterDescription'], null)
         );
-        $command->mergeApplicationDefinition();
 
-        $input = new ArgvInput();
         $input->bind($command->getDefinition());
 
-        if(!$input->hasOption($this->config["parameterName"])) {
+        if(is_null($input->getOption($paramName))) {
             $event->getOutput()->write('<error>default:</error> ');
             return;
         }
 
-        $tenantName = $input->getOption($this->config['parameterName']);
+        $tenantName = $input->getOption($paramName);
 
         if ($tenantName === null) {
             $event->getOutput()->write('<error>default:</error> ');
