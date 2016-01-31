@@ -27,6 +27,7 @@ class DendeMultidatabaseExtension extends Extension
         $container->setParameter("dende_multidatabase.parameter_name", $config["parameter_name"]);
         $container->setParameter("dende_multidatabase.parameter_description", $config["parameter_description"]);
         $container->setParameter("dende_multidatabase.fixtures", $config["fixtures"]);
+        $container->setParameter("dende_multidatabase.commands", $config["commands"]);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');

@@ -34,6 +34,7 @@ final class ClubConnectionCommandListener
      */
     private $tenantProvider;
 
+
     /**
      * ClubConnectionCommandListener constructor.
      * @param TenantProviderInterface $tenantProvider
@@ -100,12 +101,7 @@ final class ClubConnectionCommandListener
      */
     private function isProperCommand(Command $command)
     {
-        return in_array($command->getName(), [
-            'doctrine:schema:update',
-            'doctrine:schema:create',
-            'doctrine:schema:drop',
-            'doctrine:fixtures:load',
-        ]);
+        return in_array($command->getName(), $this->config["commands"]);
     }
 
     /**

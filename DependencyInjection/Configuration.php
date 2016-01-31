@@ -32,6 +32,10 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode("tenant")->prototype('scalar')->end()->end()
                 ->end()
             ->end()
+            ->arrayNode('commands')
+                ->prototype('scalar')->end()
+            ->end()
+        ->end()
         ;
 
         return $treeBuilder;
