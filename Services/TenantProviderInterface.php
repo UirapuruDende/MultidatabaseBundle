@@ -8,8 +8,8 @@ namespace Dende\MultidatabaseBundle\Services;
 interface TenantProviderInterface
 {
     /**
-     * @param string|null $tenant
+     * @param string|null $subdomain
      * @return Tenant
      */
-    public function getTenant($tenant = null);
+    public function getTenant($subdomain = null);
 }

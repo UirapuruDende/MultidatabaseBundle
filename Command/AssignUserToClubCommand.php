@@ -2,9 +2,8 @@
 namespace Dende\MultidatabaseBundle\Command;
 
 use Gyman\Bundle\ClubBundle\Entity\Club;
-use Gyman\Bundle\ClubBundle\Entity\Subdomain;
 use Gyman\Bundle\UserBundle\Entity\User;
-use Gyman\Domain\Model\EmailAddress;
+use Gyman\Domain\Member\EmailAddress;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

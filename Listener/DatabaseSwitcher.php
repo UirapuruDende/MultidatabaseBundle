@@ -40,6 +40,9 @@ class DatabaseSwitcher
     {
         /** @var Tenant $tenant */
         $tenant = $this->tenantProvider->getTenant();
-        $this->tenantConnection->forceSwitch($tenant->host, $tenant->databaseName, $tenant->username, $tenant->password);
+
+        if(!is_null($tenant)) {
+            $this->tenantConnection->forceSwitch($tenant->host, $tenant->databaseName, $tenant->username, $tenant->password);
+        }
     }
 }
