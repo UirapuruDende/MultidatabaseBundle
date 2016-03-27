@@ -56,6 +56,7 @@ final class ClubConnectionCommandListener
      */
     public function onConsoleCommand(ConsoleCommandEvent $event)
     {
+
         $command = $event->getCommand();
         $input = $event->getInput();
         $paramName = $this->config['parameterName'];
@@ -67,6 +68,12 @@ final class ClubConnectionCommandListener
         $command->getDefinition()->addOption(
             new InputOption($paramName, null, InputOption::VALUE_OPTIONAL, $this->config['parameterDescription'], null)
         );
+
+        if(!$command->getDefinition()->hasOption('em')) {
+            $command->getDefinition()->addOption(
+                new InputOption('em', null, InputOption::VALUE_OPTIONAL, 'The entity manager to use for this command')
+            );
+        }
 
         $input->bind($command->getDefinition());
 
